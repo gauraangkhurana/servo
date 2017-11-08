@@ -466,8 +466,7 @@ impl WebRenderDisplayItemConverter for DisplayItem {
                                         webrender_api::LineOrientation::Horizontal,
                                         &item.color,
                                         item.style);
-                  }
-
+            }
             DisplayItem::BoxShadow(ref item) => {
                 let box_bounds = item.box_bounds.to_rectf();
                 builder.push_box_shadow(&self.prim_info(),
@@ -541,10 +540,17 @@ impl WebRenderDisplayItemConverter for DisplayItem {
                             scroll_sensitivity
                         )
                     }
-                    ClipScrollNodeType::StickyFrame(sticky_frame_info) => {
+                    ClipScrollNodeType::StickyFrame(ref sticky_data) => {
                         // TODO: Add define_sticky_frame_with_parent to WebRender.
                         builder.push_clip_id(parent_id);
-                        let id = builder.define_sticky_frame(node.id, item_rect, sticky_frame_info);
+                        let id = builder.define_sticky_frame(
+                            node.id,
+                            item_rect,
+                            sticky_data.margins,
+                            sticky_data.vertical_offset_bounds,
+                            sticky_data.horizontal_offset_bounds,
+                            webrender_api::LayoutVector2D::zero(),
+                        );
                         builder.pop_clip_id();
                         id
                     }
